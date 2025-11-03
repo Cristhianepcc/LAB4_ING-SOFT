@@ -1,0 +1,85 @@
+import { CreateCourseContentDTO, BulkCreateCourseContentDTO } from '../../../src/application/dtos/CourseContentDTO';
+
+describe('CreateCourseContentDTO', () => {
+  it('debería crear correctamente un DTO válido', () => {
+    const input = {
+      courseId: 'C001',
+      weekNumber: 5,
+      topic: 'Introducción a TypeScript',
+      description: 'Aprender los conceptos básicos'
+    };
+
+    const [error, dto] = CreateCourseContentDTO.create(input);
+
+    expect(error).toBeUndefined();
+    expect(dto).toBeInstanceOf(CreateCourseContentDTO);
+    expect(dto?.courseId).toBe('C001');
+  });
+
+  it('debería fallar si falta courseId', () => {
+    const [error, dto] = CreateCourseContentDTO.create({
+      courseId: '',
+      weekNumber: 5,
+      topic: 'Test',
+      description: 'desc'
+    });
+
+    expect(error).toBe('Missing courseId');
+    expect(dto).toBeUndefined();
+  });
+
+  it('debería fallar si el weekNumber está fuera de rango', () => {
+    const [error] = CreateCourseContentDTO.create({
+      courseId: 'C002',
+      weekNumber: 25,
+      topic: 'Tema',
+      description: 'desc'
+    });
+
+    expect(error).toBe('Week number must be between 1 and 20');
+  });
+});
+
+describe('BulkCreateCourseContentDTO', () => {
+  it('debería crear correctamente un DTO válido con varios contenidos', () => {
+    const input = {
+      courseId: 'C001',
+      contents: [
+        { weekNumber: 1, topic: 'Intro', description: 'Desc 1' },
+        { weekNumber: 2, topic: 'Avanzado', description: 'Desc 2' }
+      ]
+    };
+
+    const [error, dto] = BulkCreateCourseContentDTO.create(input);
+
+    expect(error).toBeUndefined();
+    expect(dto).toBeInstanceOf(BulkCreateCourseContentDTO);
+    expect(dto?.contents).toHaveLength(2);
+  });
+
+  it('debería fallar si falta el courseId', () => {
+    const [error] = BulkCreateCourseContentDTO.create({
+      courseId: '',
+      contents: [{ weekNumber: 1, topic: 'Intro', description: 'Desc 1' }]
+    });
+
+    expect(error).toBe('Missing courseId');
+  });
+
+  it('debería fallar si contents está vacío o es inválido', () => {
+    const [error1] = BulkCreateCourseContentDTO.create({ courseId: 'C001', contents: [] });
+    const [error2] = BulkCreateCourseContentDTO.create({ courseId: 'C001', contents: null as any });
+
+    expect(error1).toBe('Missing or invalid contents array');
+    expect(error2).toBe('Missing or invalid contents array');
+  });
+
+  it('debería fallar si un weekNumber está fuera de rango', () => {
+    const [error] = BulkCreateCourseContentDTO.create({
+      courseId: 'C001',
+      contents: [{ weekNumber: 50, topic: 'Invalid', description: 'desc' }]
+    });
+
+    expect(error).toBe('Week number must be between 1 and 20');
+  });
+});

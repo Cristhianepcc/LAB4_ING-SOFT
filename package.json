@@ -1,0 +1,19 @@
+{
+  "name": "university_academic_management_system",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "pnpm --filter \"./apps/*\" dev",
+    "build": "pnpm --filter \"./apps/*\" build"
+  },
+  "keywords": [],
+  "author": "",
+  "packageManager": "pnpm@10.20.0",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5"
+  }
+}
